@@ -9,10 +9,10 @@
    3. Para InfinityFree/000webhost: usa los datos del panel de control
    ============================================================ */
 
-define('DB_HOST', 'localhost');        // Casi siempre "localhost"
-define('DB_NAME', 'cafeteria_cbtis');  // Nombre exacto de tu BD
-define('DB_USER', 'root');             // Tu usuario MySQL
-define('DB_PASS', '');                 // Tu contraseña MySQL (vacía en XAMPP local)
+define('DB_HOST', 'bxbltrcg8lqe1pw8xyqj-mysql.services.clever-cloud.com');        // Casi siempre "localhost"
+define('DB_NAME', 'bxbltrcg8lqe1pw8xyqj');  // Nombre exacto de tu BD
+define('DB_USER', 'utpablneh4lfsh9p');             // Tu usuario MySQL
+define('DB_PASS', 'sKWYWyqGKHIK4Wx4KXxP');                 // Tu contraseña MySQL (vacía en XAMPP local)
 define('DB_CHARSET', 'utf8mb4');
 
 /* ── JWT Secret (para tokens de app móvil) ── */
