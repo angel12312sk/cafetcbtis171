@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — Cafetería CBTis 171</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Montserrat:wght@300;400;500;600&family=Dancing+Script:wght@700&display=swap">
+<link rel="stylesheet" href="css/global.css">
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="admin-body">
+
+<!-- ════════════════ SIDEBAR ════════════════ -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="icon">🍽️</div>
+    <div class="sidebar-logo-text">Cafetería Admin<span>CBTis No. 171</span></div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Principal</div>
+    <button class="nav-item active" onclick="showPanel('dashboard', this)">
+      <span class="ni-icon">📊</span> Dashboard
+    </button>
+
+    <div class="nav-section-label">Operación</div>
+    <button class="nav-item" onclick="showPanel('orders', this)">
+      <span class="ni-icon">🧾</span> Pedidos en vivo
+      <span class="nav-badge" id="pendingCount">—</span>
+    </button>
+    <button class="nav-item" onclick="showPanel('menu', this)">
+      <span class="ni-icon">🍽️</span> Gestión de Menú
+    </button>
+    <button class="nav-item" onclick="showPanel('inventory', this)">
+      <span class="ni-icon">📦</span> Inventario
+    </button>
+
+    <div class="nav-section-label">Reportes</div>
+    <button class="nav-item" onclick="showPanel('sales', this)">
+      <span class="ni-icon">💰</span> Reporte de Ventas
+    </button>
+  </nav>
+
+  <div class="sidebar-bottom">
+    <div class="sidebar-user">
+      <div class="sidebar-avatar">👤</div>
+      <div>
+        <div class="sidebar-user-name">Administrador</div>
+        <div class="sidebar-user-role">CBTis 171</div>
+      </div>
+    </div>
+    <button class="btn-logout" onclick="logout()">Cerrar sesión</button>
+  </div>
+</aside>
+
+<!-- ════════════════ MAIN ════════════════ -->
+<main class="admin-main">
+
+  <!-- Top bar -->
+  <div class="topbar">
+    <div class="topbar-title" id="topbarTitle">Dashboard</div>
+    <div class="topbar-right">
+      <div class="topbar-date" id="topbarDate"></div>
+      <div class="live-badge"><div class="live-dot"></div> En vivo</div>
+    </div>
+  </div>
+
+  <!-- ══ PANEL: DASHBOARD ══ -->
+  <div class="panel active" id="panel-dashboard">
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-card-label">Ventas hoy</div><div class="stat-card-value" id="dash-ventas">—</div><div class="stat-card-sub">MXN recaudados</div></div>
+      <div class="stat-card"><div class="stat-card-label">Pedidos totales</div><div class="stat-card-value" id="dash-pedidos">—</div><div class="stat-card-sub" id="dash-pendientes">—</div></div>
+      <div class="stat-card"><div class="stat-card-label">Platillo estrella</div><div class="stat-card-value" style="font-size:18px;padding-top:6px;" id="dash-estrella">—</div><div class="stat-card-sub" id="dash-estrella-qty">—</div></div>
+      <div class="stat-card"><div class="stat-card-label">Alumnos únicos</div><div class="stat-card-value" id="dash-alumnos">—</div><div class="stat-card-sub">con pedido hoy</div></div>
+    </div>
+
+    <div>
+      <div class="section-head">
+        <div><h3>Últimos pedidos</h3><p>Actualizados en tiempo real</p></div>
+        <button class="btn-outline btn-sm" onclick="showPanel('orders', document.querySelectorAll('.nav-item')[1])">Ver todos →</button>
+      </div>
+      <div style="margin-top:16px;" class="table-wrap">
+        <table><thead><tr>
+          <th>Alumno</th><th>Pedido</th><th>Total</th><th>Estatus</th><th>Acción</th>
+        </tr></thead>
+        <tbody id="dashOrdersBody"><tr><td colspan="5" style="text-align:center;padding:30px;color:var(--text-muted);">Cargando...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PANEL: PEDIDOS ══ -->
+  <div class="panel" id="panel-orders">
+    <div class="section-head">
+      <div><h3>Pedidos en vivo</h3><p>Todos los pedidos del día actual</p></div>
+      <select id="orderFilter" onchange="loadOrders()"
+        class="form-control" style="width:auto;padding:8px 14px;font-size:12px;">
+        <option value="all">Todos</option>
+        <option value="pendiente">Pendientes</option>
+        <option value="pagado">Pagados</option>
+        <option value="entregado">Entregados</option>
+      </select>
+    </div>
+    <div class="table-wrap">
+      <table><thead><tr>
+        <th>Alumno</th><th>Correo</th><th>Grado / Grupo</th><th>Pedido</th><th>Total</th><th>Estatus</th><th>Acción</th>
+      </tr></thead>
+      <tbody id="ordersBody"><tr><td colspan="7" style="text-align:center;padding:30px;color:var(--text-muted);">Cargando...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══ PANEL: MENÚ ══ -->
+  <div class="panel" id="panel-menu">
+    <div class="section-head">
+      <div><h3>Gestión de Menú</h3><p>Agrega, edita o elimina platillos del día</p></div>
+      <button class="btn-gold" onclick="openAddMenu()">+ Agregar platillo</button>
+    </div>
+    <div class="menu-manage-grid" id="menuManageGrid">
+      <div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--text-muted);">Cargando menú...</div>
+    </div>
+  </div>
+
+  <!-- ══ PANEL: INVENTARIO ══ -->
+  <div class="panel" id="panel-inventory">
+    <div class="section-head">
+      <div><h3>Inventario del Día</h3><p>Controla las porciones disponibles</p></div>
+      <button class="btn-gold" onclick="saveInventory()">💾 Guardar cambios</button>
+    </div>
+    <div id="invList"><div style="text-align:center;padding:60px;color:var(--text-muted);">Cargando inventario...</div></div>
+  </div>
+
+  <!-- ══ PANEL: REPORTE DE VENTAS ══ -->
+  <div class="panel" id="panel-sales">
+    <div class="section-head">
+      <div><h3>Reporte de Ventas</h3><p id="salesDateLabel">Resumen del día</p></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="btn-outline" onclick="printReport()">🖨️ Imprimir</button>
+        <button class="btn-gold" onclick="saveReport()">💾 Guardar en BD</button>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-card-label">Total recaudado</div><div class="stat-card-value" id="sr-total">—</div><div class="stat-card-sub">MXN</div></div>
+      <div class="stat-card"><div class="stat-card-label">Pedidos completados</div><div class="stat-card-value" id="sr-completados">—</div></div>
+      <div class="stat-card"><div class="stat-card-label">Pendiente de cobro</div><div class="stat-card-value" id="sr-pendientes">—</div></div>
+      <div class="stat-card"><div class="stat-card-label">Platillo estrella</div><div class="stat-card-value" style="font-size:16px;margin-top:6px;" id="sr-estrella">—</div></div>
+    </div>
+
+    <div>
+      <div class="section-head" style="margin-bottom:16px;">
+        <div><h3>Detalle por platillo</h3></div>
+      </div>
+      <div class="table-wrap">
+        <table><thead><tr>
+          <th>Platillo</th><th>Categoría</th><th>Cantidad vendida</th><th>Precio unit.</th><th>Subtotal</th>
+        </tr></thead>
+        <tbody id="salesBody"></tbody>
+        </table>
+      </div>
+      <div class="report-total-bar">
+        <span class="report-total-label">Total del día</span>
+        <span class="report-total-value" id="salesTotalValue">—</span>
+      </div>
+    </div>
+  </div>
+
+</main><!-- /admin-main -->
+
+<!-- ══ MODAL: AGREGAR / EDITAR PLATILLO ══ -->
+<div class="modal-overlay" id="menuModal">
+  <div class="modal">
+    <h3 id="modalTitle">Agregar platillo</h3>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Nombre del platillo</label>
+        <input class="form-control" type="text" id="mNombre" placeholder="Ej. Burrito de frijoles">
+      </div>
+      <div class="form-group">
+        <label>Categoría</label>
+        <select class="form-control" id="mCategoria">
+          <option value="comida">Comida</option>
+          <option value="desayuno">Desayuno</option>
+          <option value="bebida">Bebida</option>
+          <option value="snack">Snack</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Descripción</label>
+      <textarea class="form-control" id="mDesc" rows="2" placeholder="Descripción breve"></textarea>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Precio (MXN)</label>
+        <input class="form-control" type="number" id="mPrecio" placeholder="25" min="1">
+      </div>
+      <div class="form-group">
+        <label>Stock inicial del día</label>
+        <input class="form-control" type="number" id="mStock" placeholder="100" min="0">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>URL de imagen</label>
+      <input class="form-control" type="text" id="mImagen" placeholder="https://images.unsplash.com/...">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-gold" onclick="saveMenuItem()">Guardar platillo</button>
+      <button class="btn-outline" onclick="closeModal()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script src="js/admin.js"></script>
+</body>
+</html>

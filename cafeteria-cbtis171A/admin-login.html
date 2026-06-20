@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Cafetería CBTis 171</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Montserrat:wght@300;400;500;600&family=Dancing+Script:wght@700&display=swap">
+<link rel="stylesheet" href="css/global.css">
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="login-body">
+
+<!-- Panel visual izquierdo -->
+<div class="login-visual"
+  style="background-image:url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&q=80');">
+  <a href="index.html" class="back-link">← Regresar al sitio</a>
+  <div class="login-visual-content">
+    <span class="login-visual-tag">Administración</span>
+    <h1 class="login-visual-title">Panel<br>de Control</h1>
+    <p class="login-visual-sub">Cafetería CBTis No. 171</p>
+  </div>
+</div>
+
+<!-- Panel formulario derecho -->
+<div class="login-form-panel">
+  <div class="form-logo">
+    <div class="form-logo-icon">🍽️</div>
+    <div class="form-logo-text">
+      Cafetería CBTis
+      <span>No. 171 · Admin</span>
+    </div>
+  </div>
+
+  <h2>Iniciar Sesión</h2>
+  <p class="form-subtitle">Acceso exclusivo para administradores del plantel.</p>
+
+  <div class="error-msg" id="errorMsg">Credenciales incorrectas. Intenta de nuevo.</div>
+
+  <div class="form-group">
+    <label>Correo electrónico</label>
+    <input class="form-control" type="email" id="email"
+      placeholder="admin@cbtis171.edu.mx" autocomplete="email">
+  </div>
+  <div class="form-group">
+    <label>Contraseña</label>
+    <input class="form-control" type="password" id="password"
+      placeholder="••••••••" autocomplete="current-password">
+  </div>
+
+  <button class="btn-gold" id="loginBtn" onclick="handleLogin()"
+    style="width:100%;padding:16px;font-size:13px;letter-spacing:2px;">
+    Entrar al panel
+  </button>
+
+  <div class="form-footer" style="margin-top:24px;">
+    <small style="color:var(--text-sub);">Demo: admin@cbtis171.edu.mx / admin2025</small><br><br>
+    <a href="index.html">← Volver al menú público</a>
+  </div>
+</div>
+
+<script src="js/login.js"></script>
+</body>
+</html>

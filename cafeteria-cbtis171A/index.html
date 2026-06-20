@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cafetería — CBTis No. 171</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=Montserrat:wght@300;400;500;600&family=Dancing+Script:wght@700&display=swap">
+<link rel="stylesheet" href="css/global.css">
+<link rel="stylesheet" href="css/public.css">
+</head>
+<body>
+
+<!-- ── NAVBAR ── -->
+<nav id="navbar">
+  <a href="index.html" class="nav-logo">
+    <div class="nav-logo-icon">🍽️</div>
+    <div class="nav-logo-text">Cafetería<span>CBTis No. 171</span></div>
+  </a>
+  <div class="nav-links">
+    <a href="#menu" class="active">Menú</a>
+    <a href="#info">Información</a>
+  </div>
+  <a href="admin-login.html" class="nav-admin-btn">Panel Admin</a>
+</nav>
+
+<!-- ── HERO / CAROUSEL ── -->
+<section class="hero" id="home">
+  <div class="carousel-slide slide-1 active" id="slide-0"></div>
+  <div class="carousel-slide slide-2"         id="slide-1"></div>
+  <div class="carousel-slide slide-3"         id="slide-2"></div>
+  <div class="carousel-slide slide-4"         id="slide-3"></div>
+
+  <div class="hero-content">
+    <p class="hero-eyebrow">Bienvenido</p>
+    <h1 class="hero-title">Cafetería<br>CBTis 171</h1>
+    <div class="hero-subtitle">
+      <span>Nutrición · Sabor · Comunidad</span>
+    </div>
+    <div class="hero-cta">
+      <a href="#menu" class="btn-gold">Explorar Menú</a>
+    </div>
+  </div>
+
+  <div class="carousel-dots">
+    <button class="dot active" onclick="goSlide(0)"></button>
+    <button class="dot" onclick="goSlide(1)"></button>
+    <button class="dot" onclick="goSlide(2)"></button>
+    <button class="dot" onclick="goSlide(3)"></button>
+  </div>
+
+  <div class="scroll-hint">
+    <div class="scroll-line"></div>
+    <span>scroll</span>
+  </div>
+</section>
+
+<!-- ── STATS STRIP ── -->
+<div class="stats-strip">
+  <div><span class="stat-number">500+</span><span class="stat-label">Estudiantes atendidos</span></div>
+  <div><span class="stat-number">15</span><span class="stat-label">Platillos disponibles</span></div>
+  <div><span class="stat-number">5</span><span class="stat-label">Días a la semana</span></div>
+  <div><span class="stat-number">100%</span><span class="stat-label">Pago digital</span></div>
+</div>
+
+<!-- ── MENÚ ── -->
+<section id="menu">
+  <div class="menu-header">
+    <span class="section-tag">Nuestros platillos</span>
+    <h2 class="section-title">Menú del Día</h2>
+    <div class="section-divider"><span>Hoy disponible</span></div>
+  </div>
+
+  <div class="menu-filters">
+    <button class="filter-btn active" onclick="filterMenu('all', this)">Todos</button>
+    <button class="filter-btn" onclick="filterMenu('desayuno', this)">Desayuno</button>
+    <button class="filter-btn" onclick="filterMenu('comida', this)">Comida</button>
+    <button class="filter-btn" onclick="filterMenu('bebida', this)">Bebidas</button>
+    <button class="filter-btn" onclick="filterMenu('snack', this)">Snacks</button>
+  </div>
+
+  <div class="menu-grid" id="menuGrid">
+    <div style="grid-column:1/-1;text-align:center;padding:60px 0;color:var(--text-muted);">
+      Cargando menú del día…
+    </div>
+  </div>
+</section>
+
+<!-- ── INFORMACIÓN ── -->
+<section id="info">
+  <div style="max-width:1100px;margin:0 auto;">
+    <div class="info-grid">
+      <div class="info-visual">
+        <div class="info-gold-bar"></div>
+        <img class="info-img-main"
+          src="https://images.unsplash.com/photo-1567521464027-f127ff144326?w=800&q=80"
+          alt="Cafetería CBTis 171">
+        <img class="info-img-accent"
+          src="https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=400&q=80"
+          alt="Platillo">
+      </div>
+      <div>
+        <span class="section-tag">Sobre nosotros</span>
+        <h2 class="section-title">Alimentando el<br>Futuro Técnico</h2>
+        <div class="section-divider" style="justify-content:flex-start">
+          <span>CBTis 171</span>
+        </div>
+        <p style="font-size:14px;color:var(--text-muted);line-height:1.8;margin-bottom:16px;">
+          La cafetería del CBTis No. 171 ofrece un servicio moderno y accesible para toda la comunidad estudiantil.
+          Reserva tu comida desde la app, paga en línea y recoge en segundos — sin filas.
+        </p>
+        <ul class="info-list">
+          <li>
+            <div class="icon">📱</div>
+            <div><div class="info-item-title">Reserva desde tu celular</div>
+            <div class="info-item-desc">Descarga la app Thunkable, elige tu platillo y paga sin formarte.</div></div>
+          </li>
+          <li>
+            <div class="icon">⏱️</div>
+            <div><div class="info-item-title">Horario de servicio</div>
+            <div class="info-item-desc">Lunes a viernes · 7:00 am – 2:00 pm</div></div>
+          </li>
+          <li>
+            <div class="icon">✅</div>
+            <div><div class="info-item-title">Pago seguro en línea</div>
+            <div class="info-item-desc">Stripe integrado. Transacciones cifradas y seguras.</div></div>
+          </li>
+          <li>
+            <div class="icon">📋</div>
+            <div><div class="info-item-title">Menú actualizado diariamente</div>
+            <div class="info-item-desc">El administrador actualiza los platillos cada jornada escolar.</div></div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-logo">Cafetería <span>171</span></div>
+  <span class="footer-school">Centro de Bachillerato Tecnológico Industrial y de Servicios No. 171</span>
+  <div class="footer-links">
+    <a href="#menu">Menú</a>
+    <a href="#info">Información</a>
+    <a href="admin-login.html">Administrador</a>
+  </div>
+  <div class="footer-bottom">© 2025 CBTis No. 171 · Todos los derechos reservados</div>
+</footer>
+
+<div class="toast" id="toast"></div>
+<script src="js/public.js"></script>
+</body>
+</html>
