@@ -62,9 +62,23 @@ if ($method === 'POST' || isset($_GET['action'])) {
   // CREAR PEDIDO (alumno desde app)
 if ($action === 'create') {
     $alumno_id = $body['alumno_id'] ?? $_GET['alumno_id'] ?? null;
-    if (!$alumno_id) respond(false, ['error' => 'alumno_id requerido'], 400);
-    $total = $body['total'] ?? $_GET['total'] ?? 0;
+    $total     = $body['total']     ?? $_GET['total']     ?? 0;
 
+    if (!$alumno_id) respond(false, ['error' => 'alumno_id requerido'], 400);
+
+    $db->beginTransaction();
+    try {
+      $ins = $db->prepare('INSERT INTO pedidos (alumno_id, total, estatus) VALUES (?,?,?)');
+      $ins->execute([$alumno_id, $total, 'pendiente']);
+      $pedido_id = $db->lastInsertId();
+      $db->commit();
+      respond(true, ['pedido_id' => $pedido_id, 'total' => $total]);
+    } catch (Exception $e) {
+      $db->rollBack();
+      respond(false, ['error' => 'Error al crear pedido'], 500);
+    }
+  }
+   
     // Calcular total y verificar stock
     $total = 0;
     $detalles = [];
