@@ -60,14 +60,10 @@ if ($method === 'POST' || isset($_GET['action'])) {
 
    
   // CREAR PEDIDO (alumno desde app)
-  if ($action === 'create') {
-    $payload = requireAuth();  // JWT del alumno
-    if ($payload['role'] !== 'alumno') respond(false, ['error'=>'Solo alumnos pueden hacer pedidos'], 403);
-
-    $alumno_id = $payload['sub'];
-    $items     = $body['items'] ?? [];  // [{menu_id:1, cantidad:2}, ...]
-
-    if (empty($items)) respond(false, ['error' => 'El pedido está vacío'], 400);
+if ($action === 'create') {
+    $alumno_id = $body['alumno_id'] ?? $_GET['alumno_id'] ?? null;
+    if (!$alumno_id) respond(false, ['error' => 'alumno_id requerido'], 400);
+    $total = $body['total'] ?? $_GET['total'] ?? 0;
 
     // Calcular total y verificar stock
     $total = 0;
