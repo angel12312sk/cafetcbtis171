@@ -1,7 +1,4 @@
 <?php
-/* ============================================================
-   api_pedidos.php — Pedidos (app móvil crea, admin gestiona)
-   ============================================================ */
 require_once 'config.php';
 
 $method = $_SERVER['REQUEST_METHOD'];
@@ -21,10 +18,9 @@ if ($method === 'GET' && !isset($_GET['action'])) {
   }
 
   $sql = "
-    SELECT
-      p.id, p.total, p.estatus, p.created_at,
+    SELECT p.id, p.total, p.estatus, p.created_at,
       a.nombre AS alumno, a.correo, a.grado, a.grupo,
-      GROUP_CONCAT(m.nombre, ' ×', dp.cantidad ORDER BY m.nombre SEPARATOR ', ') AS items
+      GROUP_CONCAT(m.nombre, ' x', dp.cantidad ORDER BY m.nombre SEPARATOR ', ') AS items
     FROM pedidos p
     JOIN alumnos a ON a.id = p.alumno_id
     JOIN detalle_pedido dp ON dp.pedido_id = p.id
@@ -38,7 +34,6 @@ if ($method === 'GET' && !isset($_GET['action'])) {
   $stmt->execute($params);
   $pedidos = $stmt->fetchAll();
 
-  // Contar pendientes totales del día
   $cnt = $db->prepare("SELECT COUNT(*) FROM pedidos WHERE estatus = 'pendiente' AND DATE(created_at) = ?");
   $cnt->execute([$fecha]);
   $pendientes = (int)$cnt->fetchColumn();
@@ -46,21 +41,16 @@ if ($method === 'GET' && !isset($_GET['action'])) {
   respond(true, ['pedidos' => $pedidos, 'pendientes_total' => $pendientes]);
 }
 
-// ── POST: crear pedido (app móvil) o liberar (admin) ──────
+// ── POST/GET con action: crear pedido o liberar ──────
 if ($method === 'POST' || isset($_GET['action'])) {
   $input = file_get_contents('php://input');
   $body = json_decode($input, true);
-  if (empty($body)) {
-    parse_str($input, $body);
-  }
-  if (empty($body)) {
-    $body = array_merge($_GET, $_POST);
-  }
+  if (empty($body)) { parse_str($input, $body); }
+  if (empty($body)) { $body = array_merge($_GET, $_POST); }
   $action = $body['action'] ?? $_GET['action'] ?? 'create';
 
-   
-  // CREAR PEDIDO (alumno desde app)
-if ($action === 'create') {
+  // CREAR PEDIDO
+  if ($action === 'create') {
     $alumno_id = $body['alumno_id'] ?? $_GET['alumno_id'] ?? null;
     $total     = $body['total']     ?? $_GET['total']     ?? 0;
 
@@ -78,46 +68,8 @@ if ($action === 'create') {
       respond(false, ['error' => 'Error al crear pedido'], 500);
     }
   }
-   
-    // Calcular total y verificar stock
-    $total = 0;
-    $detalles = [];
-    foreach ($items as $item) {
-      $stmt = $db->prepare('SELECT id, precio, stock, nombre FROM menu WHERE id = ? AND activo = 1');
-      $stmt->execute([$item['menu_id']]);
-      $platillo = $stmt->fetch();
-      if (!$platillo) respond(false, ['error' => 'Platillo no encontrado: ' . $item['menu_id']], 404);
-      if ($platillo['stock'] < $item['cantidad'])
-        respond(false, ['error' => "Sin stock suficiente para: {$platillo['nombre']}"], 409);
-      $subtotal = $platillo['precio'] * $item['cantidad'];
-      $total   += $subtotal;
-      $detalles[] = ['menu_id'=>$item['menu_id'], 'cantidad'=>$item['cantidad'], 'precio_unit'=>$platillo['precio'], 'subtotal'=>$subtotal];
-    }
 
-    // Insertar pedido
-    $db->beginTransaction();
-    try {
-      $ins = $db->prepare('INSERT INTO pedidos (alumno_id, total, estatus) VALUES (?,?,?)');
-      $ins->execute([$alumno_id, $total, 'pendiente']);
-      $pedido_id = $db->lastInsertId();
-
-      foreach ($detalles as $d) {
-        $dp = $db->prepare('INSERT INTO detalle_pedido (pedido_id, menu_id, cantidad, precio_unit, subtotal) VALUES (?,?,?,?,?)');
-        $dp->execute([$pedido_id, $d['menu_id'], $d['cantidad'], $d['precio_unit'], $d['subtotal']]);
-
-        // Descontar stock
-        $upd = $db->prepare('UPDATE menu SET stock = stock - ? WHERE id = ?');
-        $upd->execute([$d['cantidad'], $d['menu_id']]);
-      }
-      $db->commit();
-      respond(true, ['pedido_id' => $pedido_id, 'total' => $total]);
-    } catch (Exception $e) {
-      $db->rollBack();
-      respond(false, ['error' => 'Error al crear pedido'], 500);
-    }
-  }
-
-  // ACTUALIZAR ESTATUS DE PAGO (desde Stripe webhook)
+  // MARCAR PAGADO
   if ($action === 'mark_paid') {
     $pedido_id = $body['pedido_id'] ?? null;
     if (!$pedido_id) respond(false, ['error' => 'pedido_id requerido'], 400);
@@ -126,7 +78,7 @@ if ($action === 'create') {
     respond(true);
   }
 
-  // LIBERAR / ENTREGAR (admin)
+  // LIBERAR / ENTREGAR
   if ($action === 'release') {
     $pedido_id = $body['id'] ?? null;
     if (!$pedido_id) respond(false, ['error' => 'id requerido'], 400);
@@ -135,16 +87,16 @@ if ($action === 'create') {
     respond(true);
   }
 
-  // OBTENER MIS PEDIDOS (alumno desde app)
+  // MIS PEDIDOS
   if ($action === 'mis_pedidos') {
-    $payload   = requireAuth();
-    $alumno_id = $payload['sub'];
+    $alumno_id = $body['alumno_id'] ?? $_GET['alumno_id'] ?? null;
+    if (!$alumno_id) respond(false, ['error' => 'alumno_id requerido'], 400);
     $stmt = $db->prepare("
       SELECT p.id, p.total, p.estatus, p.created_at,
-        GROUP_CONCAT(m.nombre, ' ×', dp.cantidad SEPARATOR ', ') AS items
+        GROUP_CONCAT(m.nombre, ' x', dp.cantidad SEPARATOR ', ') AS items
       FROM pedidos p
-      JOIN detalle_pedido dp ON dp.pedido_id = p.id
-      JOIN menu m ON m.id = dp.menu_id
+      LEFT JOIN detalle_pedido dp ON dp.pedido_id = p.id
+      LEFT JOIN menu m ON m.id = dp.menu_id
       WHERE p.alumno_id = ?
       GROUP BY p.id
       ORDER BY p.created_at DESC
@@ -154,7 +106,7 @@ if ($action === 'create') {
     respond(true, ['pedidos' => $stmt->fetchAll()]);
   }
 
-  respond(false, ['error' => 'Acción no válida'], 400);
+  respond(false, ['error' => 'Accion no valida'], 400);
 }
 
-respond(false, ['error' => 'Método no permitido'], 405);
+respond(false, ['error' => 'Metodo no permitido'], 405);
