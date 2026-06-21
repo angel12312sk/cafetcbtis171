@@ -4,8 +4,19 @@
    ============================================================ */
 require_once 'config.php';
 
-$body = json_decode(file_get_contents('php://input'), true) ?? [];
-$action = $body['action'] ?? 'login_admin';
+$input = file_get_contents('php://input');
+$body = json_decode($input, true);
+if (empty($body)) {
+    parse_str($input, $body);
+}
+if (empty($body)) {
+    $body = array_merge($_GET, $_POST);
+}
+if (empty($body)) {
+    parse_str($_SERVER['QUERY_STRING'] ?? '', $body);
+}
+$action = $body['action'] ?? $_GET['action'] ?? $_POST['action'] ?? 'login_admin';
+
 
 // ── LOGIN ADMINISTRADOR (desde web) ──────────────────────────
 if ($action === 'login_admin' || !isset($body['action'])) {
