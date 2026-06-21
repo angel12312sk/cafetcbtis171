@@ -8,7 +8,7 @@ $method = $_SERVER['REQUEST_METHOD'];
 $db     = getDB();
 
 // ── GET: listar pedidos (admin) ────────────────────────────
-if ($method === 'GET') {
+if ($method === 'GET' && !isset($_GET['action'])) {
   $estatus = $_GET['estatus'] ?? 'all';
   $fecha   = $_GET['fecha']   ?? date('Y-m-d');
 
