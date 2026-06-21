@@ -47,10 +47,18 @@ if ($method === 'GET') {
 }
 
 // ── POST: crear pedido (app móvil) o liberar (admin) ──────
-if ($method === 'POST') {
-  $body   = json_decode(file_get_contents('php://input'), true) ?? [];
-  $action = $body['action'] ?? 'create';
+if ($method === 'POST' || isset($_GET['action'])) {
+  $input = file_get_contents('php://input');
+  $body = json_decode($input, true);
+  if (empty($body)) {
+    parse_str($input, $body);
+  }
+  if (empty($body)) {
+    $body = array_merge($_GET, $_POST);
+  }
+  $action = $body['action'] ?? $_GET['action'] ?? 'create';
 
+   
   // CREAR PEDIDO (alumno desde app)
   if ($action === 'create') {
     $payload = requireAuth();  // JWT del alumno
