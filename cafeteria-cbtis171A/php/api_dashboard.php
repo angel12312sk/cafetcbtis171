@@ -37,13 +37,18 @@ $q5->execute([$hoy]); $estrella = $q5->fetch();
 $q6 = $db->prepare("
   SELECT p.id, p.total, p.estatus,
     a.nombre AS alumno, a.grado, a.grupo,
-    GROUP_CONCAT(m.nombre, ' ×', dp.cantidad SEPARATOR ', ') AS items
+    COALESCE(
+      GROUP_CONCAT(m.nombre, ' x', dp.cantidad SEPARATOR ', '),
+      'Sin detalle'
+    ) AS items
   FROM pedidos p
   JOIN alumnos a ON a.id = p.alumno_id
-  JOIN detalle_pedido dp ON dp.pedido_id = p.id
-  JOIN menu m ON m.id = dp.menu_id
+  LEFT JOIN detalle_pedido dp ON dp.pedido_id = p.id
+  LEFT JOIN menu m ON m.id = dp.menu_id
   WHERE DATE(p.created_at) = ?
-  GROUP BY p.id ORDER BY p.created_at DESC LIMIT 5
+  GROUP BY p.id
+  ORDER BY p.created_at DESC
+  LIMIT 5
 ");
 $q6->execute([$hoy]); $ultimos = $q6->fetchAll();
 
