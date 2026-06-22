@@ -53,16 +53,17 @@ if ($method === 'POST' || isset($_GET['action'])) {
   $action = $body['action'] ?? $_GET['action'] ?? 'create';
 
   // CREAR PEDIDO
-  if ($action === 'create') {
-    $alumno_id = $body['alumno_id'] ?? $_GET['alumno_id'] ?? null;
-    $total     = $body['total']     ?? $_GET['total']     ?? 0;
+if ($action === 'create') {
+    $alumno_id   = $body['alumno_id'] ?? $_GET['alumno_id'] ?? null;
+    $total       = $body['total']     ?? $_GET['total']     ?? 0;
+    $items_texto = $body['items']     ?? $_GET['items']     ?? 'Sin detalle';
 
     if (!$alumno_id) respond(false, ['error' => 'alumno_id requerido'], 400);
 
     $db->beginTransaction();
     try {
-      $ins = $db->prepare('INSERT INTO pedidos (alumno_id, total, estatus) VALUES (?,?,?)');
-      $ins->execute([$alumno_id, $total, 'pendiente']);
+      $ins = $db->prepare('INSERT INTO pedidos (alumno_id, total, estatus, items_texto) VALUES (?,?,?,?)');
+      $ins->execute([$alumno_id, $total, 'pendiente', $items_texto]);
       $pedido_id = $db->lastInsertId();
       $db->commit();
       respond(true, ['pedido_id' => $pedido_id, 'total' => $total]);
