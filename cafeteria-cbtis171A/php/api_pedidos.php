@@ -17,14 +17,17 @@ if ($method === 'GET' && !isset($_GET['action'])) {
     $params[':estatus'] = $estatus;
   }
 
-  $sql = "
+ $sql = "
     SELECT p.id, p.total, p.estatus, p.created_at,
       a.nombre AS alumno, a.correo, a.grado, a.grupo,
-      GROUP_CONCAT(m.nombre, ' x', dp.cantidad ORDER BY m.nombre SEPARATOR ', ') AS items
+      COALESCE(
+        GROUP_CONCAT(m.nombre, ' x', dp.cantidad ORDER BY m.nombre SEPARATOR ', '),
+        'Sin detalle'
+      ) AS items
     FROM pedidos p
     JOIN alumnos a ON a.id = p.alumno_id
-    JOIN detalle_pedido dp ON dp.pedido_id = p.id
-    JOIN menu m ON m.id = dp.menu_id
+    LEFT JOIN detalle_pedido dp ON dp.pedido_id = p.id
+    LEFT JOIN menu m ON m.id = dp.menu_id
     WHERE $where
     GROUP BY p.id
     ORDER BY p.created_at DESC
