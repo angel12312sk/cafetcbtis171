@@ -87,17 +87,14 @@ if ($action === 'create') {
   }
 
   // MIS PEDIDOS
-  if ($action === 'mis_pedidos') {
+if ($action === 'mis_pedidos') {
     $alumno_id = $body['alumno_id'] ?? $_GET['alumno_id'] ?? null;
     if (!$alumno_id) respond(false, ['error' => 'alumno_id requerido'], 400);
     $stmt = $db->prepare("
       SELECT p.id, p.total, p.estatus, p.created_at,
-        GROUP_CONCAT(m.nombre, ' x', dp.cantidad SEPARATOR ', ') AS items
+        COALESCE(p.items_texto, 'Sin detalle') AS items
       FROM pedidos p
-      LEFT JOIN detalle_pedido dp ON dp.pedido_id = p.id
-      LEFT JOIN menu m ON m.id = dp.menu_id
       WHERE p.alumno_id = ?
-      GROUP BY p.id
       ORDER BY p.created_at DESC
       LIMIT 20
     ");
