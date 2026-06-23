@@ -17,7 +17,8 @@ $action = $body['action'] ?? $_GET['action'] ?? '';
 if ($action === 'create_session') {
   $pedido_id = $body['pedido_id'] ?? null;
   $alumno_id = $body['alumno_id'] ?? null;
-
+$total = $body['total'] ?? $_GET['total'] ?? 0;
+    
   if (!$pedido_id)
     respond(false, ['error' => 'pedido_id requerido'], 400);
 
