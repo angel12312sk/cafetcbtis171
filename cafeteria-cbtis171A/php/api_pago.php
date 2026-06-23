@@ -28,10 +28,26 @@ if ($action === 'create_session') {
   // respond(true, ['checkout_url' => $session->url]);
 
   // ── MODO DEMO ──
-  respond(true, [
-    'checkout_url' => 'https://cafetcbtis171.onrender.com/pago_exitoso.html?pedido=' . $pedido_id,
-    'session_id'   => 'demo_' . $pedido_id,
-  ]);
+ require_once __DIR__ . '/../vendor/autoload.php';
+\Stripe\Stripe::setApiKey(STRIPE_SECRET_KEY);
+
+$session = \Stripe\Checkout\Session::create([
+  'payment_method_types' => ['card'],
+  'line_items' => [[
+    'price_data' => [
+      'currency' => 'mxn',
+      'product_data' => ['name' => 'Pedido Cafetería CBTis #' . $pedido_id],
+      'unit_amount' => (int)($total * 100),
+    ],
+    'quantity' => 1,
+  ]],
+  'mode' => 'payment',
+  'success_url' => 'https://cafetcbtis171.onrender.com/pago_exitoso.html?pedido=' . $pedido_id,
+  'cancel_url'  => 'https://cafetcbtis171.onrender.com/pago_cancelado.html',
+  'metadata'    => ['pedido_id' => $pedido_id, 'alumno_id' => $alumno_id],
+]);
+
+respond(true, ['checkout_url' => $session->url, 'session_id' => $session->id]);
 }
 
 // ── WEBHOOK ─────────────────────────────────────────────────
