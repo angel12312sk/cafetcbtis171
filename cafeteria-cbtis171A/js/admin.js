@@ -121,15 +121,15 @@ function renderOrders(list) {
 
 async function releaseOrder(id) {
   try {
-    const r = await fetch('php/api_pedidos.php', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ action:'release', id })
-    });
+    const r = await fetch(`php/api_pedidos.php?action=release&id=${id}&i=1`);
     const d = await r.json();
-    if (d.ok) { showToast('Pedido #' + id + ' marcado como entregado ✓'); loadOrders(); loadDashboard(); }
-  } catch {
-    showToast('Pedido #' + id + ' entregado (modo demo) ✓');
+    if (d.ok) { 
+      showToast('Pedido #' + id + ' marcado como entregado ✓'); 
+      loadOrders(); 
+      loadDashboard(); 
+    }
+  } catch(e) {
+    showToast('Error al liberar pedido', 'error');
   }
 }
 
