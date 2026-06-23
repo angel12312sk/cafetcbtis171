@@ -13,6 +13,10 @@ if (empty($body)) {
 }
 $action = $body['action'] ?? $_GET['action'] ?? '';
 
+// Detectar si es un webhook de Stripe
+if ($method === 'POST' && isset($body['type']) && str_starts_with($body['type'], 'checkout')) {
+    $action = 'webhook';
+}
 // ── CREAR SESIÓN DE PAGO ─────────────────────────────────────
 if ($action === 'create_session') {
   $pedido_id = $body['pedido_id'] ?? null;
