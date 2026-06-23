@@ -21,13 +21,8 @@ if ($action === 'create_session') {
   if (!$pedido_id)
     respond(false, ['error' => 'pedido_id requerido'], 400);
 
-  // ── MODO REAL ──
-  // \Stripe\Stripe::setApiKey(STRIPE_SECRET_KEY);
-  // require_once '../stripe-php/init.php';
-  // $session = \Stripe\Checkout\Session::create([...]);
-  // respond(true, ['checkout_url' => $session->url]);
 
-  // ── MODO DEMO ──
+  // ── MODO REAL ──
  require_once __DIR__ . '/../vendor/autoload.php';
 \Stripe\Stripe::setApiKey(STRIPE_SECRET_KEY);
 
