@@ -19,8 +19,8 @@ define('DB_CHARSET', 'utf8mb4');
 define('JWT_SECRET', 'cbtis171_secret_key_2025_cafeteria');
 
 /* ── Stripe (para pagos reales) ── */
-define('STRIPE_SECRET_KEY', 'sk_test_XXXXXXXXXXXXXXXXXXXXXXXXX'); // Cambia por tu key real
-define('STRIPE_PUBLIC_KEY', 'pk_test_XXXXXXXXXXXXXXXXXXXXXXXXX');
+define('STRIPE_SECRET_KEY', 'sk_test_51TgxH6FbDZ1X8NNjwKPRWxMxIOQI69Igv4qahVrOm9xFxcmEmdahlbIORFR13JgmLryvbhG6q4jE2FTrtkThBdS600Mz5ntIC0'); // Cambia por tu key real
+define('STRIPE_PUBLIC_KEY', 'pk_test_51TgxH6FbDZ1X8NNjxNK6uKfDElET7XAhlqB8DGGt6lZTsD5tEw1lMaNlWpevs0QH06lt1u49Sk8oWi3eZNLicZbO00uRMrnhAb');
 
 /* ── CORS para app móvil Thunkable ── */
 header('Access-Control-Allow-Origin: *');
